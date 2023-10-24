@@ -1,0 +1,33 @@
+Dependencies for Project 'project1', Target 'Target 1': (DO NOT MODIFY !)
+CompilerVersion: 5050106::V5.05 update 1 (build 106)::ARMCC
+F (.\startup_stm32f10x_hd.s)(0x532BB241)(--cpu Cortex-M3 --pd "__EVAL SETA 1" -g --apcs=interwork -IC:\Keil_v5\ARM\Pack\Keil\STM32F1xx_DFP\1.0.5\Device\Include--pd "__UVISION_VERSION SETA 538" --pd "STM32F10X_HD SETA 1"--list ..\obj\startup_stm32f10x_hd.lst --xref -o ..\obj\startup_stm32f10x_hd.o --depend ..\obj\startup_stm32f10x_hd.d)
+F (.\project1.c)(0x65360F31)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork --split_sections -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart-IC:\Keil_v5\ARM\Pack\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="538" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\project1.o --omf_browse ..\obj\project1.crf --depend ..\obj\project1.d)
+I (..\SYSTEM\sys\sys.h)(0x550EC368)
+I (..\SYSTEM\sys\stm32f10x.h)(0x4F1E2E3E)
+I (..\SYSTEM\sys\core_cm3.h)(0x4D523B5A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x4F1E2E3E)
+I (..\SYSTEM\usart\usart.h)(0x550EB9F2)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
+I (..\SYSTEM\delay\delay.h)(0x555AC620)
+F (..\SYSTEM\delay\delay.c)(0x555AC5E2)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork --split_sections -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart-IC:\Keil_v5\ARM\Pack\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="538" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\delay.o --omf_browse ..\obj\delay.crf --depend ..\obj\delay.d)
+I (..\SYSTEM\delay\delay.h)(0x555AC620)
+I (..\SYSTEM\sys\sys.h)(0x550EC368)
+I (..\SYSTEM\sys\stm32f10x.h)(0x4F1E2E3E)
+I (..\SYSTEM\sys\core_cm3.h)(0x4D523B5A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x4F1E2E3E)
+F (..\SYSTEM\sys\sys.c)(0x6536109A)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork --split_sections -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart-IC:\Keil_v5\ARM\Pack\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="538" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\sys.o --omf_browse ..\obj\sys.crf --depend ..\obj\sys.d)
+I (..\SYSTEM\sys\sys.h)(0x550EC368)
+I (..\SYSTEM\sys\stm32f10x.h)(0x4F1E2E3E)
+I (..\SYSTEM\sys\core_cm3.h)(0x4D523B5A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x4F1E2E3E)
+F (..\SYSTEM\usart\usart.c)(0x5DD53596)(-c --cpu Cortex-M3 -D__EVAL -g -O0 --apcs=interwork --split_sections -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart-IC:\Keil_v5\ARM\Pack\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="538" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\usart.o --omf_browse ..\obj\usart.crf --depend ..\obj\usart.d)
+I (..\SYSTEM\usart\usart.h)(0x550EB9F2)
+I (..\SYSTEM\sys\sys.h)(0x550EC368)
+I (..\SYSTEM\sys\stm32f10x.h)(0x4F1E2E3E)
+I (..\SYSTEM\sys\core_cm3.h)(0x4D523B5A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5475F300)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x4F1E2E3E)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x5475F300)
