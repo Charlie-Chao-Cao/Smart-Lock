@@ -147,11 +147,9 @@ __Vectors_Size  EQU  __Vectors_End - __Vectors
 Reset_Handler   PROC
                 EXPORT  Reset_Handler             [WEAK]
                 IMPORT  __main
-				;寄存器版本代码，因为没有用到SystemInit函数，所以注释掉以下代码为防止报错！
-				;库函数版本代码，建议加上这里（外部必须实现SystemInit函数），以初始化stm32时钟等。
-                ;IMPORT  SystemInit			
-                ;LDR     R0, =SystemInit	
-                ;BLX     R0                  
+                IMPORT  SystemInit
+                LDR     R0, =SystemInit
+                BLX     R0               
                 LDR     R0, =__main
                 BX      R0
                 ENDP
