@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\HARDWARE\LCD;..\HARDWARE\LED;..\HARDWARE\KEY;..\HARDWARE\SPI;..\HARDWARE\W25QXX;..\HARDWARE\RFID-RC522;..\STM32F10x_FWLib\inc;..\USER;..\CORE</IncludePath>
+              <IncludePath>..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\HARDWARE\LCD;..\HARDWARE\LED;..\HARDWARE\KEY;..\HARDWARE\SPI;..\HARDWARE\W25QXX;..\HARDWARE\RFID-RC522;..\STM32F10x_FWLib\inc;..\USER;..\CORE;..\HARDWARE\AS608;..\HARDWARE\USART2;..\HARDWARE\TIMER;..\MALLOC;..\HARDWARE\BEEP</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -453,6 +453,26 @@
               <FileName>rc522.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\RFID-RC522\rc522.c</FilePath>
+            </File>
+            <File>
+              <FileName>usart2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\USART2\usart2.c</FilePath>
+            </File>
+            <File>
+              <FileName>as608.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\AS608\as608.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\TIMER\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>beep.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\BEEP\beep.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -588,6 +608,16 @@
               <FileName>stm32f10x_wwdg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\STM32F10x_FWLib\src\stm32f10x_wwdg.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>MALLOC</GroupName>
+          <Files>
+            <File>
+              <FileName>malloc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\MALLOC\malloc.c</FilePath>
             </File>
           </Files>
         </Group>
