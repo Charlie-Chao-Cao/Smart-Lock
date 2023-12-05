@@ -553,61 +553,116 @@ u8 PS_HandShake(u32 *PS_Addr)
 //模块应答包确认码信息解析
 //功能：解析确认码错误信息返回信息
 //参数: ensure
-const char *EnsureMessage(u8 ensure) 
-{
-	const char *p;
-	switch(ensure)
-	{
-		case  0x00:
-			p="OK";break;		
-		case  0x01:
-			p="数据包接收错误";break;
-		case  0x02:
-			p="传感器上没有手指";break;
-		case  0x03:
-			p="录入指纹图像失败";break;
-		case  0x04:
-			p="指纹图像太干、太淡而生不成特征";break;
-		case  0x05:
-			p="指纹图像太湿、太糊而生不成特征";break;
-		case  0x06:
-			p="指纹图像太乱而生不成特征";break;
-		case  0x07:
-			p="指纹图像正常，但特征点太少（或面积太小）而生不成特征";break;
-		case  0x08:
-			p="指纹不匹配";break;
-		case  0x09:
-			p="没搜索到指纹";break;
-		case  0x0a:
-			p="特征合并失败";break;
-		case  0x0b:
-			p="访问指纹库时地址序号超出指纹库范围";
-		case  0x10:
-			p="删除模板失败";break;
-		case  0x11:
-			p="清空指纹库失败";break;	
-		case  0x15:
-			p="缓冲区内没有有效原始图而生不成图像";break;
-		case  0x18:
-			p="读写 FLASH 出错";break;
-		case  0x19:
-			p="未定义错误";break;
-		case  0x1a:
-			p="无效寄存器号";break;
-		case  0x1b:
-			p="寄存器设定内容错误";break;
-		case  0x1c:
-			p="记事本页码指定错误";break;
-		case  0x1f:
-			p="指纹库满";break;
-		case  0x20:
-			p="地址错误";break;
-		default :
-			p="模块返回确认码有误";break;
-	}
- return p;	
-}
+//const char *EnsureMessage(u8 ensure) 
+//{
+//	const char *p;
+//	switch(ensure)
+//	{
+//		case  0x00:
+//			p="OK";break;		
+//		case  0x01:
+//			p="数据包接收错误";break;
+//		case  0x02:
+//			p="传感器上没有手指";break;
+//		case  0x03:
+//			p="录入指纹图像失败";break;
+//		case  0x04:
+//			p="指纹图像太干、太淡而生不成特征";break;
+//		case  0x05:
+//			p="指纹图像太湿、太糊而生不成特征";break;
+//		case  0x06:
+//			p="指纹图像太乱而生不成特征";break;
+//		case  0x07:
+//			p="指纹图像正常，但特征点太少（或面积太小）而生不成特征";break;
+//		case  0x08:
+//			p="指纹不匹配";break;
+//		case  0x09:
+//			p="没搜索到指纹";break;
+//		case  0x0a:
+//			p="特征合并失败";break;
+//		case  0x0b:
+//			p="访问指纹库时地址序号超出指纹库范围";
+//		case  0x10:
+//			p="删除模板失败";break;
+//		case  0x11:
+//			p="清空指纹库失败";break;	
+//		case  0x15:
+//			p="缓冲区内没有有效原始图而生不成图像";break;
+//		case  0x18:
+//			p="读写 FLASH 出错";break;
+//		case  0x19:
+//			p="未定义错误";break;
+//		case  0x1a:
+//			p="无效寄存器号";break;
+//		case  0x1b:
+//			p="寄存器设定内容错误";break;
+//		case  0x1c:
+//			p="记事本页码指定错误";break;
+//		case  0x1f:
+//			p="指纹库满";break;
+//		case  0x20:
+//			p="地址错误";break;
+//		default :
+//			p="模块返回确认码有误";break;
+//	}
+// return p;	
+//}
 
+const char *EnsureMessage(uint8_t ensure) 
+{
+    const char *p;
+    switch(ensure)
+    {
+        case 0x00:
+            p = "OK"; break;
+        case 0x01:
+            p = "Data recv error"; break;
+        case 0x02:
+            p = "No finger on sensor"; break;
+        case 0x03:
+            p = "Capture failed"; break;
+        case 0x04:
+            p = "Dry or faint image"; break;
+        case 0x05:
+            p = "Wet or blurry image"; break;
+        case 0x06:
+            p = "Chaotic image"; break;
+        case 0x07:
+            p = "Few features in image"; break;
+        case 0x08:
+            p = "Fingerprint mismatch"; break;
+        case 0x09:
+            p = "Fingerprint not found"; break;
+        case 0x0a:
+            p = "Feature merge failed"; break;
+        case 0x0b:
+            p = "Address index error"; break;
+        case 0x10:
+            p = "Delete template failed"; break;
+        case 0x11:
+            p = "Clear library failed"; break;
+        case 0x15:
+            p = "No valid image in buffer"; break;
+        case 0x18:
+            p = "FLASH read/write error"; break;
+        case 0x19:
+            p = "Undefined error"; break;
+        case 0x1a:
+            p = "Invalid register number"; break;
+        case 0x1b:
+            p = "Register content error"; break;
+        case 0x1c:
+            p = "Notebook page error"; break;
+        case 0x1f:
+            p = "Fingerprint library full"; break;
+        case 0x20:
+            p = "Address error"; break;
+        default:
+            p = "Module error"; break;
+    }
+
+    return p;
+}
 
 
 

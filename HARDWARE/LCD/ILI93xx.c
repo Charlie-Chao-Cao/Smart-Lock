@@ -3,6 +3,7 @@
 #include "font.h"
 #include "usart.h"
 #include "delay.h"
+#include "string.h"
 
 
 //LCD的画笔颜色和背景色
@@ -2342,4 +2343,25 @@ void LCD_ShowString(u16 x, u16 y, u16 width, u16 height, u8 size, u8 *p)
     }
 }
 
+
+//在指定宽度的中间显示字符串
+//如果字符长度超过了len,则用Show_Str显示
+//len:指定要显示的宽度			  
+void Show_Str_Mid(u16 x,u16 y,u8*str,u8 size,u8 len)
+{
+	u16 strlenth=0;
+   	strlenth=strlen((const char*)str);
+	strlenth*=size/2;
+	if(strlenth>len)
+	{
+		LCD_ShowString(x,y,lcddev.width,lcddev.height,size,str);
+		//Show_Str(x,y,lcddev.width,lcddev.height,str,size,1);
+	}
+	else
+	{
+		strlenth=(len-strlenth)/2;
+		LCD_ShowString(strlenth+x,y,lcddev.width,lcddev.height,size,str);
+	    //Show_Str(strlenth+x,y,lcddev.width,lcddev.height,str,size,1);
+	}
+}   
 
