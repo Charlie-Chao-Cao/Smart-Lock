@@ -2,6 +2,8 @@
 #include "usart.h"		
 #include "delay.h"	
 
+#include <string.h>
+
 #include "lcd.h"	
 #include "led.h"
 #include "key.h"
@@ -16,7 +18,7 @@
 
 
 // 定义功能函数
-
+void LCD_ClearMiddle(void);
 void UpdateFingerprint(void);
 void DeleteFingerprint(void);
 	
@@ -24,9 +26,7 @@ void unlockDoor(void) {
     printf("Door unlocked!\n");
 }
 
-void changePassword(void) {
-    printf("Changing password...\n");
-}
+void changePassword(void);
 
 void viewLogs(void) {
     printf("Viewing access logs...\n");
@@ -41,8 +41,8 @@ typedef struct MenuItem {
 } MenuItem;
 
 MenuItem fingerprintUpdateorDelete[] = {
-    {"1. Update Fingerprint" , &UpdateFingerprint, NULL,2},
-    {"2. Delete Fingerprint", &DeleteFingerprint, NULL,2}
+    {"1. Update Fingerprint" , &UpdateFingerprint, NULL,NULL},
+    {"2. Delete Fingerprint", &DeleteFingerprint, NULL,NULL}
 };
 
 MenuItem fingerprintSettingsMenu[] = {
@@ -99,35 +99,38 @@ int stackTop = -1;  // 栈顶索引，-1 表示栈为空
 
 void refreshLCD(void);
 
+u32 FLASH_SIZE=128*1024*1024;	//FLASH 大小为16M字节
+
 
 //AS608相关
 #define usart2_baund  57600//串口2波特率，根据指纹模块波特率更改
 
 SysPara AS608Para;//指纹模块AS608参数
 u16 ValidN;//模块内有效指纹个数
-u8** kbd_tbl;
-const  u8* kbd_menu[15]={"删指纹"," : ","录指纹","1","2","3","4","5","6","7","8","9","DEL","0","Enter",};//按键表
-const  u8* kbd_delFR[15]={"返回"," : ","清空指纹","1","2","3","4","5","6","7","8","9","DEL","0","Enter",};//按键表
 
 void Add_FR(int num);	//录指纹
 void Del_FR(u8 num);	//删除指纹
 void press_FR(void);//刷指纹
 void ShowErrMessage(u8 ensure);//显示确认码错误信息
-void AS608_load_keyboard(u16 x,u16 y,u8 **kbtbl);//加载虚拟键盘
-u8  AS608_get_keynum(u16 x,u16 y);//获取键盘数
-u16 GET_NUM(void);//获取数值
+//void AS608_load_keyboard(u16 x,u16 y,u8 **kbtbl);//加载虚拟键盘
+//u8  AS608_get_keynum(u16 x,u16 y);//获取键盘数
+//u16 GET_NUM(void);//获取数值
 
 
-//要写入到W25Q128的字符串数组
-const u8 TEXT_Buffer[]={"123456"};
-#define SIZE sizeof(TEXT_Buffer)	
+//要写入到W25Q128的密码
+// Define the size of the password
+#define PASSWORD_SIZE 6
+// Global variable to store the password
+int Password[PASSWORD_SIZE] ={1, 2, 3, 4, 5, 6};
+//const u8 Password[]={"123456"};
+#define SIZE sizeof(Password)	
 
 
 void UpdateFingerprint(void)
 {	
 	LCD_Clear(BLACK);
 	LCD_ShowString(60,20,210,24,24,"Smart Lock");
-	LCD_ShowString(10,300,220,12,12,"S4:UP  S8:DOWN  S12:CONFIRM  S16:DOWN");
+	LCD_ShowString(10,300,220,12,12,"S4:UP  S8:DOWN  S12:CONFIRM  S16:BACK");
 	Add_FR(menuStack[stackTop].index);
 }
 
@@ -135,10 +138,134 @@ void DeleteFingerprint(void)
 {	
 	LCD_Clear(BLACK);
 	LCD_ShowString(60,20,210,24,24,"Smart Lock");
-	LCD_ShowString(10,300,220,12,12,"S4:UP  S8:DOWN  S12:CONFIRM  S16:DOWN");
+	LCD_ShowString(10,300,220,12,12,"S4:UP  S8:DOWN  S12:CONFIRM  S16:BACK");
 	Del_FR(menuStack[stackTop].index);
 }
 
+// Function to compare passwords
+int comparePasswords(int userInput[PASSWORD_SIZE]) {
+	int i;
+    for (i = 0; i < PASSWORD_SIZE; i++) {
+        if (userInput[i] != Password[i]) {
+            return 0; // Passwords do not match
+        }
+    }
+    return 1; // Passwords match
+}
+
+u8 getPassword(int *newPassword,u8 temp) {
+	int i=0;
+	int key1=-1;
+	if(temp==0)
+	{
+		i=0;
+	}		
+	else 
+	{
+		LCD_ShowNum(16, 140, newPassword[0], sizeof(newPassword[0]), 16);	//第一个数字
+		i=1;
+	}
+	LCD_ShowString(20,100,200,16,16,"Enter a 6-digit password:");
+	while(1)
+	{
+		key1=keyboard_scan();
+		if((key1>=0&&key1<=9)&&i<6)
+		{
+			newPassword[i]=key1;
+			LCD_ShowNum(16+i*32, 140, newPassword[i], sizeof(newPassword[i]), 16);
+			i++;
+		}
+		else if(key1==14)
+		{
+			return 0;
+		}
+		else if(key1==15&&i>0)
+		{
+			i--;
+			LCD_Fill(16+i*32,140,16+(i+1)*32,160,BLACK);
+		}
+		else if (key1 == 13) {
+            if (i == 6) {
+                break;
+            }
+        }
+	}
+	return 1;
+}
+
+void changePassword(void) {
+	int newPassword[6];
+	
+	LCD_Clear(BLACK);
+	LCD_ShowString(60,20,210,24,24,"Smart Lock");
+	LCD_ShowString(10,300,220,12,12,"S12: CONFIRM  S16: BACK  S15: DELETE");
+	
+	A1:
+	Show_Str_Mid(0,60,"Change Password",16,240);
+	Show_Str_Mid(0,80,"Check old password",16,240);
+	if(getPassword(newPassword,0)==1)
+	{
+		if(comparePasswords(newPassword))
+		{
+			LCD_ClearMiddle();//清除半屏 
+			Show_Str_Mid(0,100,"Password is correct!",16,240);
+			delay_ms(1000);
+			LCD_ClearMiddle();//清除半屏 
+			Show_Str_Mid(0,80,"Set new password",16,240);
+			if(getPassword(newPassword,0))
+			{
+				//printf("getPassword: %d%d%d%d%d%d\t\n", newPassword[0],newPassword[1],newPassword[2],newPassword[3],newPassword[4],newPassword[5]);
+				LCD_ClearMiddle(); 
+				LCD_ShowString(20,120,200,16,16,"Start writing password...."); 
+				W25QXX_Write((u8*)newPassword,FLASH_SIZE-100,SIZE);			//从倒数第100个地址处开始,写入SIZE长度的数据
+				
+				W25QXX_Read((u8*)Password,FLASH_SIZE-100,SIZE);
+				printf("密码修改成功！新密码为: %d%d%d%d%d%d\t\n", Password[0],Password[1],Password[2],Password[3],Password[4],Password[5]);
+				LCD_ShowString(20,120,200,16,16,"Password change completed!");	//提示传送完成
+				delay_ms(1000);
+			}
+		}
+		else
+		{
+			LCD_ClearMiddle();//清除半屏 
+			Show_Str_Mid(0,100,"Wrong password, please re-enter!",16,240);
+			delay_ms(1000);
+			LCD_ClearMiddle();//清除半屏 
+			goto A1;
+		}
+	}
+	LCD_ClearMiddle();
+}
+
+void checkPassword(int x) {
+	int enteredPassword[6];
+	enteredPassword[0]=x;
+	
+	LCD_Clear(BLACK);
+	LCD_ShowString(60,20,210,24,24,"Smart Lock");
+	LCD_ShowString(10,300,220,12,12,"S12: CONFIRM  S16: BACK  S15: DELETE");
+	
+	if(getPassword(enteredPassword,1))	
+	{
+		LCD_ClearMiddle();//清除半屏    
+		if(comparePasswords(enteredPassword)==1)
+		{
+			Show_Str_Mid(0,120,"The door lock is unlocked!",16,240);
+		}
+		else
+		{
+			Show_Str_Mid(0,120,"Incorrect Password!",16,240);
+		}
+		delay_ms(1000);
+	}
+	
+	LCD_ClearMiddle();
+}
+
+void LCD_ClearMiddle(void)
+{
+	LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+}
 
 
 int main(void)
@@ -147,17 +274,16 @@ int main(void)
 	u8 lcd_id[12]; //存放 LCD ID字符串
 	
 	//SPI & Flash变量
-	u8 key;
+	int key;
 	//u16 i=0;
-	u8 datatemp[SIZE];
-	u32 FLASH_SIZE; 
+//	u8 datatemp[SIZE];
+//	u32 FLASH_SIZE; 
     u16 id = 0;
 	
 	//AS608变量
 	u8 ensure;
-	u8 key_num;
+//	u8 key_num;
 	char *str;	 
-	
 	
 	Stm32_Clock_Init(9);	//系统时钟设置
 	delay_init(72);	  		//延时初始化
@@ -193,7 +319,8 @@ int main(void)
 		LED0=!LED0;//DS0闪烁
 	}
     LCD_ShowString(30,70,200,16,16,"W25Q128 Ready!");
-	FLASH_SIZE=128*1024*1024;	//FLASH 大小为16M字节
+//	FLASH_SIZE=128*1024*1024;	//FLASH 大小为16M字节
+	W25QXX_Read((u8*)Password,FLASH_SIZE-100,SIZE);		//读取密码
 	
 	//AS608初始化
 	LCD_ShowString(30,170,200,16,16,"Handshake with AS608....");
@@ -235,27 +362,8 @@ int main(void)
 		ShowErrMessage(ensure);	
 	myfree(SRAMIN,str);
 	
-	
-	
 	delay_ms(1000);
 	LCD_Clear(BLACK);
-	
-	
-	
-//	while(1)
-//	{
-//		LCD_Clear(BLACK);
-//		key=keyboard_scan();
-//		if (key==1) {
-//            int keyPressed=key;
-//			printf("Press a key, key=%d\t\n",keyPressed);
-//			
-//            // 调用菜单导航函数
-//            Add_FR(1);
-
-//            // 处理其他任务
-//        }
-//	}
 	
   	while(1)
 	{
@@ -275,15 +383,20 @@ int main(void)
 
             // 处理其他任务
         }
+		else if((key>=0&&key<=9))
+		{
+			checkPassword(key);
+		}
 		
 		
 		
 		
+//		
 //		if(key==1)	//KEY1按下,写入W25QXX
 //		{
-//			LCD_Fill(0,170,239,319,WHITE);//清除半屏    
+//			//LCD_Fill(0,170,239,319,BLACK);//清除半屏    
 // 			LCD_ShowString(30,170,200,16,16,"Start Write W25Q128...."); 
-//			W25QXX_Write((u8*)TEXT_Buffer,FLASH_SIZE-100,SIZE);			//从倒数第100个地址处开始,写入SIZE长度的数据
+//			W25QXX_Write((u8*)Password,FLASH_SIZE-100,SIZE);			//从倒数第100个地址处开始,写入SIZE长度的数据
 //			LCD_ShowString(30,170,200,16,16,"W25Q128 Write Finished!");	//提示传送完成
 //		}
 //		if(key==2)	//KEY0按下,读取字符串并显示
@@ -291,7 +404,11 @@ int main(void)
 // 			LCD_ShowString(30,170,200,16,16,"Start Read W25Q128.... ");
 //			W25QXX_Read(datatemp,FLASH_SIZE-100,SIZE);					//从倒数第100个地址处开始,读出SIZE个字节
 //			LCD_ShowString(30,170,200,16,16,"The Data Readed Is:  ");	//提示传送完成
-//			LCD_ShowString(30,190,200,16,16,datatemp);//显示读到的字符串
+//			LCD_ShowString(30,170,200,16,16,datatemp);//显示读到的字符串
+//		}
+//		if(key==3)
+//		{
+//			W25QXX_Erase_Sector(FLASH_SIZE-200);
 //		}
 		
 		
@@ -327,7 +444,7 @@ void refreshLCD(void) {
 		y+=20;
 	}
 	LCD_ShowString(10,70+(20*selectedIndex),200,16,16,"->");
-	LCD_ShowString(10,300,220,12,12,"S4:UP  S8:DOWN  S12:CONFIRM  S16:DOWN");
+	LCD_ShowString(10,300,220,12,12,"S4:UP  S8:DOWN  S12:CONFIRM  S16:BACK");
 }
 
 
