@@ -5,6 +5,9 @@
 #include "lcd.h"
 #include "string.h"
 
+#include "beep.h"
+#include "lcd.h"	
+
 //
 // M1卡分为16个扇区，每个扇区由四个块（块0、块1、块2、块3）组成
 // 将16个扇区的64个块按绝对地址编号为：0~63
@@ -28,27 +31,34 @@
 unsigned char CT[2];//卡类型
 unsigned char SN[4]; //卡号
 unsigned char RFID[16];			//存放RFID 
-unsigned char lxl_bit=0;
-unsigned char card1_bit=0;
-unsigned char card2_bit=0;
-unsigned char card3_bit=0;
-unsigned char card4_bit=0;
+//unsigned char lxl_bit=0;
+//unsigned char card1_bit=0;
+//unsigned char card2_bit=0;
+//unsigned char card3_bit=0;
+//unsigned char card4_bit=0;
 unsigned char total=0;
-unsigned char lxl[4]={196,58,104,217};
-unsigned char card_1[4]={83,106,11,1};
-unsigned char card_2[4]={208,121,31,57};
-unsigned char card_3[4]={176,177,143,165};
-unsigned char card_4[4]={5,158,10,136};
+//unsigned char lxl[4]={196,58,104,217};
+//unsigned char card_1[4]={83,106,11,1};
+//unsigned char card_2[4]={208,121,31,57};
+//unsigned char card_3[4]={176,177,143,165};
+//unsigned char card_4[4]={5,158,10,136};
 u8 KEY[6]={0xff,0xff,0xff,0xff,0xff,0xff};
 u8 AUDIO_OPEN[6] = {0xAA, 0x07, 0x02, 0x00, 0x09, 0xBC};
 unsigned char RFID1[16]={0x00,0x00,0x00,0x00,0x00,0x00,0xff,0x07,0x80,0x29,0xff,0xff,0xff,0xff,0xff,0xff};
+unsigned char RFID2[16]={0x10,0x20,0x30,0x40,0x50,0x60,0xff,0x07,0x80,0x29,0x01,0x02,0x03,0x04,0x05,0x06};
 /*函数声明*/
 unsigned char status;
-unsigned char s=0x08;
+unsigned char s=0x08; // 0x08 就是2扇区0区块（即第9块）
 
 #define   RC522_DELAY()  delay_us( 20 )
 
-void RC522_Handel(void)
+
+// Function to compare global RFID with another RFID array
+int compareRFID(void) {
+    return memcmp(RFID1, RFID, sizeof(RFID1)) == 0;
+}
+
+int RC522_Handel(u8 myStatus)
 {
 	int i;
     status = PcdRequest(PICC_REQALL,CT);//寻卡
@@ -63,48 +73,48 @@ void RC522_Handel(void)
         status=MI_ERR;		
         ShowID(0,200,SN,BLUE,WHITE); //在液晶屏上显示卡的ID号
         
-        if((SN[0]==lxl[0])
-	        &&(SN[1]==lxl[1])
-	        &&(SN[2]==lxl[2])
-	        &&(SN[3]==lxl[3]))
-        {
-            lxl_bit=1;
-            printf("\r\nThe User is:card_0\r\n");
-        }
-        if((SN[0]==card_1[0])
-	        &&(SN[1]==card_1[1])
-	        &&(SN[2]==card_1[2])
-	        &&(SN[3]==card_1[3]))
-        {
-            card1_bit=1;
-            printf("\r\nThe User is:card_1\r\n");
-            
-        }
-        if((SN[0]==card_2[0])
-	        &&(SN[1]==card_2[1])
-	        &&(SN[2]==card_2[2])
-	        &&(SN[3]==card_2[3]))
-        {
-            card2_bit=1;
-            printf("\r\nThe User is:card_2\r\n");
-        }
-        
-        if((SN[0]==card_3[0])
-	        &&(SN[1]==card_3[1])
-	        &&(SN[2]==card_3[2])
-	        &&(SN[3]==card_3[3]))
-        {
-            card3_bit=1;
-            printf("\r\nThe User is:card_3\r\n");
-        }
-        if((SN[0]==card_4[0])
-	        &&(SN[1]==card_4[1])
-	        &&(SN[2]==card_4[2])
-	        &&(SN[3]==card_4[3]))
-        {
-            card4_bit=1;
-            printf("\r\nThe User is:card_4\r\n");
-        }
+//        if((SN[0]==lxl[0])
+//	        &&(SN[1]==lxl[1])
+//	        &&(SN[2]==lxl[2])
+//	        &&(SN[3]==lxl[3]))
+//        {
+//            lxl_bit=1;
+//            printf("\r\nThe User is:card_0\r\n");
+//        }
+//        if((SN[0]==card_1[0])
+//	        &&(SN[1]==card_1[1])
+//	        &&(SN[2]==card_1[2])
+//	        &&(SN[3]==card_1[3]))
+//        {
+//            card1_bit=1;
+//            printf("\r\nThe User is:card_1\r\n");
+//            
+//        }
+//        if((SN[0]==card_2[0])
+//	        &&(SN[1]==card_2[1])
+//	        &&(SN[2]==card_2[2])
+//	        &&(SN[3]==card_2[3]))
+//        {
+//            card2_bit=1;
+//            printf("\r\nThe User is:card_2\r\n");
+//        }
+//        
+//        if((SN[0]==card_3[0])
+//	        &&(SN[1]==card_3[1])
+//	        &&(SN[2]==card_3[2])
+//	        &&(SN[3]==card_3[3]))
+//        {
+//            card3_bit=1;
+//            printf("\r\nThe User is:card_3\r\n");
+//        }
+//        if((SN[0]==card_4[0])
+//	        &&(SN[1]==card_4[1])
+//	        &&(SN[2]==card_4[2])
+//	        &&(SN[3]==card_4[3]))
+//        {
+//            card4_bit=1;
+//            printf("\r\nThe User is:card_4\r\n");
+//        }
         //total=card1_bit+card2_bit+card3_bit+card4_bit+lxl_bit;
         status =PcdSelect(SN);
     }
@@ -123,17 +133,93 @@ void RC522_Handel(void)
         status=MI_ERR;
         status=PcdRead(s,RFID);
 		
-		for(i=0;i<16;i++)
-		{
-			printf("%X",RFID[i]);
-		}
-		printf("\t\n");
+		if(status == MI_OK)//读卡成功
+        {
+//			for(i=0;i<16;i++)
+//			{
+//				printf("%X",RFID[i]);
+//			}
+//			printf("\t\n");
+			
+			if(myStatus==0)
+			{
+				if(compareRFID())
+				{
+					//门禁验证成功，门解锁
+					BEEP=1;
+					LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+					POINT_COLOR=GREEN;
+					Show_Str_Mid(0,120,"The door lock is unlocked!",16,240);
+					POINT_COLOR=WHITE;
+					delay_ms(2000);
+					BEEP=0;
+					LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+				}
+				else
+				{
+					LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+					Show_Str_Mid(0,120,"Invalid key card!",16,240);
+					delay_ms(2000);
+					LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+				}
+			}
+        }
+        else
+        {
+            printf("PcdRead() failed\r\n");
+        }
     }
     if(status==MI_OK)//讀卡成功
     {
         status=MI_ERR;
+		
+		if(myStatus==1)	//添加门禁卡
+		{
+			// 写数据到M1卡一块
+			status = PcdWrite(s, RFID1);
+			if(status == MI_OK)//写卡成功
+			{
+				LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+				Show_Str_Mid(0,120,"Card writing successful!",16,240);
+				printf("PcdWrite success\r\n");
+				delay_ms(2000);
+				LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+				return 1;
+			}
+			else
+			{
+				LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+				Show_Str_Mid(0,120,"Writing card failed!",16,240);
+				printf("PcdWrite failed\r\n");
+				delay_ms(2000);
+				LCD_Fill(0,50,240,290,BLACK);//清除半屏 
+			}
+		}
+		else if(myStatus==2)	//删除门禁卡
+		{
+			// 写数据到M1卡一块
+			status = PcdWrite(s, RFID2);
+			if(status == MI_OK)//写卡成功
+			{
+				LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+				Show_Str_Mid(0,120,"Card deleted successfully!",16,240);
+				printf("PcdWrite success\r\n");
+				delay_ms(2000);
+				LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+				return 1;
+			}
+			else
+			{
+				LCD_Fill(0,50,240,290,BLACK);//清除半屏  
+				Show_Str_Mid(0,120,"Failed to delete card!",16,240);
+				printf("PcdWrite failed\r\n");
+				delay_ms(2000);
+				LCD_Fill(0,50,240,290,BLACK);//清除半屏 
+			}
+		}
         delay_ms(100);
     }	
+	return 0;
 }
 
 void RC522_Init ( void )

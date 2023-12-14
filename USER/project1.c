@@ -21,16 +21,14 @@
 void LCD_ClearMiddle(void);
 void UpdateFingerprint(void);
 void DeleteFingerprint(void);
-	
+void changePassword(void);	
+void addKeyCard(void);
+void deleteKeyCard(void);
+
 void unlockDoor(void) {
     printf("Door unlocked!\n");
 }
 
-void changePassword(void);
-
-void viewLogs(void) {
-    printf("Viewing access logs...\n");
-}
 
 // 定义子菜单
 typedef struct MenuItem {
@@ -54,8 +52,8 @@ MenuItem fingerprintSettingsMenu[] = {
 };
 
 MenuItem keyCardSettingsMenu[] = {
-    {"1. Key card 1" , &viewLogs, NULL,2},
-    {"2. Key card 2", &viewLogs, NULL,2}
+    {"1. Add key card" , &addKeyCard, NULL,NULL},
+    {"2. Delete key card", &deleteKeyCard, NULL,NULL}
 };
 
 // 定义主菜单
@@ -140,6 +138,27 @@ void DeleteFingerprint(void)
 	LCD_ShowString(60,20,210,24,24,"Smart Lock");
 	LCD_ShowString(10,300,220,12,12,"S4:UP  S8:DOWN  S12:CONFIRM  S16:BACK");
 	Del_FR(menuStack[stackTop].index);
+}
+
+void addKeyCard(void) {
+	LCD_ClearMiddle();
+	Show_Str_Mid(0,80,"Add key card",16,240);
+	Show_Str_Mid(0,120,"Please place the key card",16,240);
+    while(RC522_Handel(1)==0)	//mode 1
+	{
+		if(keyboard_scan()==14)	break;
+	}	
+	LCD_ClearMiddle();	
+}
+void deleteKeyCard(void) {
+	LCD_ClearMiddle();
+	Show_Str_Mid(0,80,"Delete key card",16,240);
+	Show_Str_Mid(0,120,"Please place the key card",16,240);
+	while(RC522_Handel(2)==0)	//mode 2 
+	{
+		if(keyboard_scan()==14)	break;
+	}	
+	LCD_ClearMiddle();
 }
 
 // Function to compare passwords
@@ -368,9 +387,8 @@ int main(void)
   	while(1)
 	{
 		refreshLCD();
-		RC522_Handel();
-		key=keyboard_scan();
-		
+		RC522_Handel(0);
+		key=keyboard_scan();		
 		//printf("%d\t\n",sizeof(currentMenu) / sizeof(currentMenu[0]));
 		
 		// 轮询检测按键
@@ -388,36 +406,6 @@ int main(void)
 			checkPassword(key);
 		}
 		
-		
-		
-		
-//		
-//		if(key==1)	//KEY1按下,写入W25QXX
-//		{
-//			//LCD_Fill(0,170,239,319,BLACK);//清除半屏    
-// 			LCD_ShowString(30,170,200,16,16,"Start Write W25Q128...."); 
-//			W25QXX_Write((u8*)Password,FLASH_SIZE-100,SIZE);			//从倒数第100个地址处开始,写入SIZE长度的数据
-//			LCD_ShowString(30,170,200,16,16,"W25Q128 Write Finished!");	//提示传送完成
-//		}
-//		if(key==2)	//KEY0按下,读取字符串并显示
-//		{
-// 			LCD_ShowString(30,170,200,16,16,"Start Read W25Q128.... ");
-//			W25QXX_Read(datatemp,FLASH_SIZE-100,SIZE);					//从倒数第100个地址处开始,读出SIZE个字节
-//			LCD_ShowString(30,170,200,16,16,"The Data Readed Is:  ");	//提示传送完成
-//			LCD_ShowString(30,170,200,16,16,datatemp);//显示读到的字符串
-//		}
-//		if(key==3)
-//		{
-//			W25QXX_Erase_Sector(FLASH_SIZE-200);
-//		}
-		
-		
-		//key_num=AS608_get_keynum(0,170);	
-//		if(key_num)
-//		{
-//			if(key_num==1)Del_FR();		//删指纹
-//			if(key_num==3)Add_FR();		//录指纹									
-//		}
 		if(PS_Sta)	 //检测PS_Sta状态，如果有手指按下
 		{
 			press_FR();//刷指纹			

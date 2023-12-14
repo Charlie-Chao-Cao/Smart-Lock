@@ -172,7 +172,7 @@ void SPI1_Init(void);
 
 //#define          RC522_MISO_GET()          ((GPIOA->IDR & (1 << 6)) != 0)
 
-void             RC522_Handel               (void);
+int             RC522_Handel               (u8);
 void             RC522_Init                 ( void );                       //初始化
 void             PcdReset                   ( void );                       //复位
 void             M500PcdConfigISOType       ( u8 type );                    //工作方式
